@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using UnityEngine;
 
 namespace Dicemension
@@ -18,6 +19,11 @@ namespace Dicemension
                 {
                     RotationSpeed = authoring.RotationSpeed
                 });
+                AddComponent(entity, new PhysicsMassOverride
+                {
+                    IsKinematic = 1
+                });
+                AddComponent(entity, new RigidbodyConstraint());
             }
         }
     }
@@ -25,10 +31,17 @@ namespace Dicemension
     public struct Dice : IComponentData
     {
         public bool Rolling;
+        public bool Falling;
         public float3 Center;
         public float3 Pivot;
         public float3 Axis;
         public float Angle;
         public float RotationSpeed;
+        public RollingDirection RollingDirection;
+    }
+
+    public enum RollingDirection
+    {
+        NONE, UP, DOWN, LEFT, RIGHT
     }
 }

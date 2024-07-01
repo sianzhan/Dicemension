@@ -33,9 +33,21 @@ namespace Dicemension
             var rollingDirection = GetRollingDirection(input.Move);
             var (pivot, axis) = GetRollingPivotAxis(rollingDirection);
 
-            foreach (var (dice, transform) in SystemAPI.Query<RefRW<Dice>, RefRW<LocalTransform>>())
+            foreach (var (dice, transform, entity) in SystemAPI.Query<RefRW<Dice>, RefRW<LocalTransform>>().WithEntityAccess())
             {
-                if (dice.ValueRO.Rolling)
+                if (dice.ValueRO.Falling)
+                {
+                    var mass = SystemAPI.GetComponentRW<PhysicsMassOverride>(entity);
+                    mass.ValueRW.IsKinematic = 0;
+
+                    var constraint = SystemAPI.GetComponentRW<RigidbodyConstraint>(entity);
+
+                    constraint.ValueRW.FreezePosition.z = true;
+                    
+                    constraint.ValueRW.FreezeRotation.x = true;
+                    constraint.ValueRW.FreezeRotation.y = true;
+                }
+                else if (dice.ValueRO.Rolling)
                 {
                     var deltaAngle = SystemAPI.Time.DeltaTime * dice.ValueRO.RotationSpeed;
                     dice.ValueRW.Angle += deltaAngle;
@@ -51,6 +63,10 @@ namespace Dicemension
                     if (!dice.ValueRO.Rolling)
                     {
                         SnapToGrid(transform);
+                        if (HasHole(transform.ValueRO.Position))
+                        {
+                            dice.ValueRW.Falling = true;
+                        }
                     }
                 }
                 else
@@ -64,15 +80,10 @@ namespace Dicemension
                     dice.ValueRW.Pivot = transform.ValueRO.Position + pivot;
                     dice.ValueRW.Axis = axis;
                     dice.ValueRW.Angle = 0f;
-
+                    dice.ValueRW.RollingDirection = rollingDirection;
                     dice.ValueRW.Rolling = true;
                 }
             }
-        }
-
-        private enum RollingDirection
-        {
-            NONE, UP, DOWN, LEFT, RIGHT
         }
 
         [BurstCompile]
@@ -184,10 +195,33 @@ namespace Dicemension
         }
 
         [BurstCompile]
+        private bool HasHole(float3 position)
+        {
+            var input = new RaycastInput()
+            {
+                Start = position,
+                End = position + math.down(),
+                Filter = new CollisionFilter()
+                {
+                    BelongsTo = PhysicsSettings.Layers.DiceLayer,
+                    CollidesWith = PhysicsSettings.Layers.HoleLayer,
+                    GroupIndex = 0
+                }
+            };
+
+            var collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
+            bool hit = collisionWorld.CastRay(input);
+
+            if (hit) return true;
+            return false;
+        }
+
+        [BurstCompile]
         private bool CanMove(float3 position)
         {
             if (HasObstacle(position)) return false;
             if (HasGround(position)) return true;
+            if (HasHole(position)) return true;
             return false;
         }
 

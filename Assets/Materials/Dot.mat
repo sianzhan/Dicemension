@@ -3,11 +3,11 @@
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 32
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Background
+  m_Name: Dot
   m_Shader: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -99,13 +99,13 @@ Material:
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
-    - _GlossMapScale: 0
-    - _Glossiness: 0
-    - _GlossyReflections: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Parallax: 0.005
+    - _Parallax: 0.02
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _SampleGI: 0
@@ -119,13 +119,13 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.9354622, g: 0.9490196, b: 0.90156865, a: 1}
-    - _Color: {r: 0.9354622, g: 0.9490196, b: 0.90156865, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &108652846602604537
+--- !u!114 &5670491623950245964
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
