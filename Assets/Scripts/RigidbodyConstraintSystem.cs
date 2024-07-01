@@ -34,8 +34,7 @@ namespace Dicemension
             foreach (var (constraint, velocity, transform)
             in SystemAPI.Query<RefRO<RigidbodyConstraint>, RefRW<PhysicsVelocity>, RefRW<LocalTransform>>())
             {
-                var rotationDifference = math.mul(transform.ValueRW.Rotation, math.inverse(constraint.ValueRO.RotationCache));
-                var eulerDifference = math.Euler(rotationDifference);
+                var deltaRotation = math.mul(transform.ValueRW.Rotation, math.inverse(constraint.ValueRO.RotationCache));
 
                 for (var i = 0; i < 3; ++i)
                 {
@@ -48,12 +47,11 @@ namespace Dicemension
                     if (constraint.ValueRO.FreezeRotation[i])
                     {
                         velocity.ValueRW.Angular[i] = 0;
-                        eulerDifference[i] = 0;
+                        deltaRotation.value[i] = 0;
                     }
                 }
 
-                var constraintedRotationDifference = quaternion.Euler(eulerDifference);
-                transform.ValueRW.Rotation = math.mul(constraintedRotationDifference, constraint.ValueRO.RotationCache);
+                transform.ValueRW.Rotation = math.mul(deltaRotation, constraint.ValueRO.RotationCache);
             }
         }
     }
